@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
 app.use(helmet());
 
-app.get('/studentLogin', function(req, res){
+app.get('/', function(req, res){
     res.render('student');
 });
 
@@ -47,7 +47,7 @@ app.post('/studentInfo', function(req, res){
 });
 
 app.get('/registration', function(req, res){
-    Student.findOne({id: req.param('id')}, function(err, response){
+    Student.findOne({id: req.query.id}, function(err, response){
         if (response !== null){
             let studentData = [];
             if(!response.plane && response.isChinese){
@@ -245,7 +245,6 @@ if (process.env.NODE_ENV == 'production') {
             return next();
             }
     });
-
 };
 /*
 var httpServer = http.createServer(app);
