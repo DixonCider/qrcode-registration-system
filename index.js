@@ -212,9 +212,45 @@ function initDB(filePath){
 app.get('*', function(req, res){
 	res.send('Sorry, this is an invalid URL.');
 });
+// Start server.
+var port = process.env.PORT || 8080; // Used by Heroku and http on localhost
+process.env['PORT'] = process.env.PORT || 8444; // Used by https on localhost
 
+http.createServer(app).listen(port, function () {
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+});
+
+// Run separate https server if on localhost
+if (process.env.NODE_ENV != 'production') {
+    https.createServer(credentials, app).listen(process.env.PORT, function () {
+        console.log("Express server listening with https on port %d in %s mode", this.address().port, app.settings.env);
+    });
+};
+
+if (process.env.NODE_ENV == 'production') {
+    app.use(function (req, res, next) {
+        res.setHeader('Strict-Transport-Security', 'max-age=8640000; includeSubDomains');
+        if (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
+            return res.redirect(301, 'https://' + req.host + req.url);
+        } else {
+            return next();
+            }
+    });
+} else {
+    app.use(function (req, res, next) {
+        res.setHeader('Strict-Transport-Security', 'max-age=8640000; includeSubDomains');
+        if (!req.secure) {
+            return res.redirect(301, 'https://' + req.host  + ":" + process.env.PORT + req.url);
+        } else {
+            return next();
+            }
+    });
+
+};
+/*
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(8081);
 httpsServer.listen(8444);
+*/
