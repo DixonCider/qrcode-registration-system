@@ -1,0 +1,15 @@
+html
+head
+    title NTUIOIA Admin Login
+body
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+    form(id = "loginForm", action = "/adminInfo", method = "POST")
+        div
+            label(for = "username") Username: 
+            input(name = "username")
+        br
+        div
+            label(for = "password") Password: 
+            input(name = "password" type="password")
+        br
+        button(type = "submit") Login

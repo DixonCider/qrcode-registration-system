@@ -1,0 +1,14 @@
+html
+head
+    title NTUIOIA Registration
+body
+    script(src='/jquery-3.3.1.min.js')
+    script(src = '/qrcode.min.js')
+    h2 #{data.id}
+    div(id = 'qrcode')
+    h2 Todo List
+    ul 
+        each val in data.displayData
+            li=val
+    script.
+        new QRCode(document.getElementById("qrcode"), "#{data.id}");

@@ -1,0 +1,99 @@
+html
+head
+    title NTUIOIA Admin
+    meta(name="apple-mobile-web-app-capable" content="yes")
+body
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+    script(src = '/instascan.min.js')
+    video(id='preview' playsinline autoplay controls muted loop)
+    label(for = 'id') StudentId:
+    input(name = 'id' id = 'id')
+    button(id = 'manualQuery') Search
+    h2(id = 'englishName')
+    h2(id = 'chineseName')
+    h2(id = 'status')
+    h2(id = 'commentLog')
+    input(id = 'comment' type = 'text')
+    button(id = 'pass') Pass
+    button(id = 'fail') Fail
+    script.
+        var studentData = null;
+        let scanner = new Instascan.Scanner({ 
+            video: document.getElementById('preview'),
+            mirror: false
+        });
+        scanner.addListener('scan', function (content) {
+            // Async query stuff.
+            updateInfo(content);
+            // console.log(content);
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+            } else {
+            console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
+        function updateInfo(content){
+            $.ajax({
+                url : '/studentInfo',
+                type: 'POST',
+                data: {'id': content},
+                success: function (data) {
+                    // console.log(data);
+                    if(data !== null){
+                        studentData = data;
+                        $('#englishName').text(data.englishName);
+                        $('#chineseName').text(data.chineseName);
+                        $('#id').val(data.id);
+                        $('#commentLog').html(data.commentLog);
+                        if (data['#{serviceName}']){
+                            $('#status').text('Pass');
+                        }
+                        else {
+                            $('#status').text('Fail');
+                        }
+                    }
+                    else{
+                        alert('ID not valid.');
+                    }
+                }
+            });
+        }
+    script.
+        $('#manualQuery').on('click', function(){
+            let id = $('#id').val();
+            updateInfo(id);
+        });
+        $('#pass').on("click", function(){
+            changeStatus(true);
+        });
+        $('#fail').on("click", function(){
+            changeStatus(false);
+        });
+        function changeStatus(pass){
+            let id = studentData.id;
+            let comment = $('#comment').val();
+            let commentLog = studentData.commentLog;
+            if (comment !== '') {
+                comment = commentLog + comment + '<br>';
+            }
+            $.ajax({
+                url : '/adminSetProperty',
+                type: 'POST',
+                data: {
+                    'id': id,
+                    'serviceName': '#{serviceName}',
+                    'password': '#{key}',
+                    'verdict': pass,
+                    'comment': comment
+                },
+                success: function(err, response){
+                    updateInfo(id);
+                    alert('Success');
+                    $('#comment').val('');
+                }
+            });
+        }

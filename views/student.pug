@@ -1,0 +1,38 @@
+html
+head
+    title NTUIOIA Registration
+body
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+    form(id = "loginForm", action = "/studentInfo", method = "POST")
+        div
+            label(for = "name") Name: 
+            input(name = "name")
+        br
+        div
+            label(for = "studentId") Student ID: 
+            input(name = "studentId")
+        br
+        button(type = "submit") Login
+    script.
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            console.log('prevented');
+            let studentId = $("input[name='studentId']").val().toUpperCase();
+            $.ajax({
+                url : $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: {'id': studentId},
+                success: function (data) {
+                    // console.log(data);
+                    if(data != null){
+                        window.location.href = '\\registration?id=' + studentId;
+                    }
+                    else{
+                        console.log('fail');
+                    }
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+        });
