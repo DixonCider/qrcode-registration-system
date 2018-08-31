@@ -51,22 +51,22 @@ app.get('/registration', function(req, res){
         if (response !== null){
             let studentData = [];
             if(!response.plane && response.isChinese){
-                studentData.push('Plane');
+                studentData.push('[F] Plane');
             }
             if(!response.receipt && response.isChinese){
-                studentData.push('Receipt');
+                studentData.push('[I] Receipt');
             }
             if(!response.emergency){
-                studentData.push('Emergency Contact');
+                studentData.push('[E] Emergency Contact');
             }
             if(!response.health){
-                studentData.push('Health Exam Sheet');
+                studentData.push('[H] Health Exam Sheet');
             }
             if(!response.insurance){
-                studentData.push('Proof of Insurance');
+                studentData.push('[I] Proof of Insurance');
             }
             if(!response.visiting && response.isVisiting){
-                studentData.push('Visiting');
+                studentData.push('[V] Visiting');
             }
             response.displayData = studentData;
             res.render('registration', { 'data': response });
