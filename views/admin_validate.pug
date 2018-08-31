@@ -46,7 +46,7 @@ body
             if (cameras.length > 0) {
                 str = "";
                 for (let x in cameras) {
-                    str += x + ' '
+                    str += cameras[x] + ' '
                 }
                 alert(str);
                 scanner.start(cameras[0]);
