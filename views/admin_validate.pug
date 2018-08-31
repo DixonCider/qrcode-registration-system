@@ -4,7 +4,8 @@ head
     title NTUIOIA Admin
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-    script(src = '/instascan.min.js')
+    // script(src = '/instascan.min.js')
+    script(src = '/instascan.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     meta(name='viewport' content='width=device-width, initial-scale=1')
     // meta(name="apple-mobile-web-app-capable" content="yes")
@@ -46,9 +47,8 @@ body
             if (cameras.length > 0) {
                 str = "";
                 for (let x in cameras) {
-                    str += cameras[x] + ' '
+                    console.log(cameras[x])
                 }
-                alert(str);
                 scanner.start(cameras[0]);
             // if(cameras[1]){ scanner.start(cameras[1]); } else { scanner.start(cameras[0]); }
             } else {
