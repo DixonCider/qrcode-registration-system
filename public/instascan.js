@@ -30473,6 +30473,7 @@ var Camera = function () {
                 constraints = {
                   audio: false,
                   video: {
+                    facingMode: 'environment',
                     mandatory: {
                       sourceId: this.id,
                       minWidth: 600,
