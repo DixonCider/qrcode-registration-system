@@ -52,7 +52,7 @@ body
                 console.error('No cameras found.');
             }
         }).catch(function (e) {
-            alert('Get cameras fail.');
+            alert(e);
             console.error(e);
         });
         function updateInfo(content){
