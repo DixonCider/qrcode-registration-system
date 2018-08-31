@@ -5,7 +5,7 @@ head
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
     // script(src = '/instascan.min.js')
-    script(src = '/instascan.js')
+    script(src = '/instascan.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     meta(name='viewport' content='width=device-width, initial-scale=1')
     // meta(name="apple-mobile-web-app-capable" content="yes")
@@ -45,11 +45,14 @@ body
         });
         Instascan.Camera.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
-                str = "";
-                for (let x in cameras) {
-                    console.log(cameras[x])
+                // Hacky solution.
+                user_device = getMobileOperatingSystem()
+                camera_index = 0;
+                alert(user_device + ' ' + cameras.length)
+                if (user_device == 'Android') {
+                    camera_index = 1;
                 }
-                scanner.start(cameras[0]);
+                scanner.start(cameras[camera_index]);
             // if(cameras[1]){ scanner.start(cameras[1]); } else { scanner.start(cameras[0]); }
             } else {
                 alert('No camera found.');
@@ -83,6 +86,21 @@ body
                     }
                 }
             });
+        }
+        function getMobileOperatingSystem() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            // Windows Phone must come first because its UA also contains "Android"
+            if (/windows phone/i.test(userAgent)) {
+                return "Windows Phone";
+            }
+            if (/android/i.test(userAgent)) {
+                return "Android";
+            }
+            // iOS detection from: http://stackoverflow.com/a/9039885/177710
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return "iOS";
+            }
+            return "unknown";
         }
     script.
         $('#manualQuery').on('click', function(){
