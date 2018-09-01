@@ -48,11 +48,11 @@ body
                 // Hacky solution.
                 user_device = getMobileOperatingSystem()
                 camera_index = 0;
-                // alert(user_device + ' ' + cameras.length)
                 if (user_device == 'Android') {
                     camera_index = 1;
                 }
                 scanner.start(cameras[camera_index]);
+                alert(user_device + ' ' + cameras.length)
             // if(cameras[1]){ scanner.start(cameras[1]); } else { scanner.start(cameras[0]); }
             } else {
                 alert('No camera found.');
