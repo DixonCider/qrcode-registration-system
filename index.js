@@ -248,7 +248,7 @@ function checkTimeZone(index) {
     let sessionStartTime = new Date();
     // Move now to GMT+8.
     const TIMEZONEDIFF = 8;
-    now.setHours(now.getUTCHours() + 8);
+    now.setHours(now.getUTCHours() + TIMEZONEDIFF);
 
     let minutes = 0;
     if (index <= 4){
