@@ -16,5 +16,6 @@ body
         ul 
             each val in data.displayData
                 li=val
+        h3 After passing all above counters, please go outside and receive your student ID card.
         script.
             new QRCode(document.getElementById("qrcode"), "#{data.id}");

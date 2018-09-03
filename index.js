@@ -47,31 +47,55 @@ app.post('/studentInfo', function(req, res){
 });
 
 app.get('/registration', function(req, res){
+    // Render registration page.
     Student.findOne({id: req.query.id}, function(err, response){
         if (response !== null){
-            let studentData = [];
-            if(!response.plane && response.isChinese){
-                studentData.push('[F] Plane');
+            let passTimeZoneVerdict = checkTimeZone(response.timeSection);
+            let passTimeZoneTest = passTimeZoneVerdict == 'ontime';
+            if (passTimeZoneTest && !response.isEntered){
+                // Update isEntered to TRUE.
+                Student.updateOne(
+                    {id: req.query.id},
+                    {isEntered: true},
+                    function(err, response){
+                        console.log(response);
+                    }
+                );
             }
-            if(!response.receipt && response.isChinese){
-                studentData.push('[I] Receipt');
+            if (passTimeZoneTest || response.isEntered){
+                let studentData = [];
+                if(!response.plane && response.isChinese){
+                    studentData.push('[F] Plane');
+                }
+                if(!response.receipt && response.isChinese){
+                    studentData.push('[I] Receipt');
+                }
+                if(!response.emergency){
+                    studentData.push('[E] Emergency Contact');
+                }
+                if(!response.health){
+                    studentData.push('[H] Health Exam Sheet');
+                }
+                if(!response.insurance){
+                    studentData.push('[I] Proof of Insurance');
+                }
+                if(!response.visiting && response.isVisiting){
+                    studentData.push('[V] Visiting');
+                }
+                response.displayData = studentData;
+                res.render('registration', { 'data': response });
             }
-            if(!response.emergency){
-                studentData.push('[E] Emergency Contact');
+            else {
+                if (passTimeZoneVerdict == 'early'){
+                    res.send('Login time error. (too early) Please try again later.');
+                }
+                else if (passTimeZoneVerdict == 'late'){
+                    res.send('Login time error. (too late) Please contact your regional coordinator for make-up registration.');   
+                }
             }
-            if(!response.health){
-                studentData.push('[H] Health Exam Sheet');
-            }
-            if(!response.insurance){
-                studentData.push('[I] Proof of Insurance');
-            }
-            if(!response.visiting && response.isVisiting){
-                studentData.push('[V] Visiting');
-            }
-            response.displayData = studentData;
-            res.render('registration', { 'data': response });
         }
         else {
+            alert('Incorrect student information. Please try again.');
             res.redirect('/studentLogin');
         }
     });
@@ -135,6 +159,12 @@ app.get('/initDB', function(req, res){
     res.send('Database initialized.');
 });
 
+app.get('/test', function(req, res){
+    // let filePath = './db_input.csv';
+    // initDB(filePath);
+    res.send('Test database initialized.');
+});
+
 // Database stuff.
 var studentSchema = mongoose.Schema({
     englishName: String,
@@ -150,7 +180,8 @@ var studentSchema = mongoose.Schema({
     plane: Boolean,
     visiting: Boolean,
     emergency: Boolean,
-    card: Boolean
+    card: Boolean,
+    isEntered: Boolean
 });
 var Student = mongoose.model("Student", studentSchema);
 var adminSchema = mongoose.Schema({
@@ -166,6 +197,7 @@ let adminPw = [
     { 'serviceName': 'visiting', 'password': sha256('visiting') },
     { 'serviceName': 'emergency', 'password': sha256('emergency') },
     { 'serviceName': 'card', 'password': sha256('card') },
+    { 'serviceName': 'isEntered', 'password': sha256('isEntered') },
 ];
 function initDB(filePath){
     // Student.
@@ -188,7 +220,8 @@ function initDB(filePath){
             plane: element.plane === undefined ? false : element.plane,
             visiting: element.visiting === undefined ? false : element.visiting,
             emergency: element.emergency === undefined ? false : element.emergency,
-            card: element.card === undefined ? false : element.card
+            card: element.card === undefined ? false : element.card,
+            isEntered: element.isEntered === undefined ? false : element.isEntered
         }));
         students.forEach(x => {
             x.save(function(err){
@@ -207,6 +240,37 @@ function initDB(filePath){
             if (err) throw err;
         })
     });
+}
+
+// Timezone stuff.
+function checkTimeZone(index) {
+    let now = new Date();
+    let sessionStartTime = new Date();
+    let minutes = 0;
+    if (index <= 4){
+        sessionStartTime.setHours(10);
+        sessionStartTime.setMinutes(0);
+        minutes = 30 * (index - 1);
+    }
+    else {
+        sessionStartTime.setHours(13);
+        sessionStartTime.setMinutes(30);
+        minutes = 30 * (index - 5);
+    }
+    sessionStartTime = addMinutes(sessionStartTime, minutes);
+    sessionEndTime = addMinutes(sessionStartTime, 30);
+    if (sessionStartTime > now){
+        return 'early';
+    }
+    else if (sessionEndTime < now){
+        return 'late';
+    }
+    else {
+        return 'ontime';
+    }
+}
+function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes*60000);
 }
 
 app.get('*', function(req, res){
