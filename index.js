@@ -246,6 +246,10 @@ function initDB(filePath){
 function checkTimeZone(index) {
     let now = new Date();
     let sessionStartTime = new Date();
+    // Move now to GMT+8.
+    const TIMEZONEDIFF = 8;
+    now.setHours(now.getUTCHours() + 8);
+
     let minutes = 0;
     if (index <= 4){
         sessionStartTime.setHours(10);
