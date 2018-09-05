@@ -169,8 +169,9 @@ app.get('/test', function(req, res){
 });
 
 app.post('/isAllPass', function(req, res){
-    let AllPass = true;
-    Student.findOne({id: req.query.id}, function(err, response){
+    Student.findOne({id: req.body.id}, function(err, response){
+        console.log(response);
+        let allPass = true;
         if (response.isChinese && (!response.plane || !response.entryFee)){
             allPass = false;
         }
@@ -189,7 +190,12 @@ app.post('/isAllPass', function(req, res){
         if (!response.emergency){
             allPass = false;
         }
-        res.send(isAllPass);
+        if (allPass){
+            res.send();
+        }
+        else {
+            res.status(404).send({success: false, error: {message: 'No blah Found'}});
+        }
     });
 });
 

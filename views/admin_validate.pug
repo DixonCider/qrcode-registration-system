@@ -85,9 +85,10 @@ body
                             $.ajax({
                                 url : '/isAllPass',
                                 type: 'POST',
-                                data: { 'id': id },
+                                async: false,
+                                data: { 'id': data.id },
                                 success: function(err, response){
-                                    alert(response);
+                                    alert(response.status);
                                 }
                             });
                         }
