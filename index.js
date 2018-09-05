@@ -98,7 +98,7 @@ app.get('/registration', function(req, res){
             }
         }
         else {
-            alert('Incorrect student information. Please try again.');
+            // alert('Incorrect student information. Please try again.');
             res.redirect('/studentLogin');
         }
     });
