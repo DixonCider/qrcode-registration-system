@@ -247,18 +247,18 @@ function initDB(filePath){
             timeSection: element.timeSection,
             id: element.id,
             // isChinese: element.isChinese,
-            isChinese: element.isChinese === undefined ? false : element.isChinese == 'true',
-            isVisiting: element.isVisiting === undefined ? false : element.isVisiting == 'true',
-            commentLog: element.commentLog === undefined ? "" : element.commentLog,
-            receipt: element.receipt === undefined ? false : element.receipt == 'true',
-            health: element.health === undefined ? false : element.health == 'true',
-            insurance: element.insurance === undefined ? false : element.insurance == 'true',
-            plane: element.plane === undefined ? false : element.plane == 'true',
-            visiting: element.visiting === undefined ? false : element.visiting == 'true',
-            emergency: element.emergency === undefined ? false : element.emergency == 'true',
-            card: element.card === undefined ? false : element.card == 'true',
-            isEntered: element.isEntered === undefined ? false : element.isEntered == 'true',
-            entryFee: element.entryFee === undefined ? false : element.entryFee == 'true'
+            isChinese: element.isChinese === undefined || element.isChinese === null ? false : element.isChinese == 'true',
+            isVisiting: element.isVisiting === undefined || element.isVisiting === null ? false : element.isVisiting == 'true',
+            commentLog: element.commentLog === undefined || element.commentLog === null ? "" : element.commentLog,
+            receipt: element.receipt === undefined || element.receipt === null ? false : element.receipt == 'true',
+            health: element.health === undefined || element.health === null ? false : element.health == 'true',
+            insurance: element.insurance === undefined || element.insurance === null ? false : element.insurance == 'true',
+            plane: element.plane === undefined || element.plane === null ? false : element.plane == 'true',
+            visiting: element.visiting === undefined || element.visiting === null ? false : element.visiting == 'true',
+            emergency: element.emergency === undefined || element.emergency === null ? false : element.emergency == 'true',
+            card: element.card === undefined || element.card === null ? false : element.card == 'true',
+            isEntered: element.isEntered === undefined || element.isEntered === null ? false : element.isEntered == 'true',
+            entryFee: element.entryFee === undefined || element.entryFee === null ? false : element.entryFee == 'true'
         }));
         students.forEach(x => {
             x.save(function(err){
