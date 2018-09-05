@@ -67,7 +67,10 @@ app.get('/registration', function(req, res){
                 if(!response.plane && response.isChinese){
                     studentData.push('[F] Plane');
                 }
-                if(!response.receipt && response.isChinese){
+                if(!response.entryFee && response.isChinese){
+                    studentData.push('[T] Taiwan Entry Permit Fee');
+                }
+                if(!response.receipt){
                     studentData.push('[I] Receipt');
                 }
                 if(!response.emergency){
@@ -174,6 +177,7 @@ var studentSchema = mongoose.Schema({
     isChinese: Boolean,
     isVisiting: Boolean,
     commentLog: String,
+    entryFee: Boolean,
     receipt: Boolean,
     health: Boolean,
     insurance: Boolean,
@@ -198,6 +202,7 @@ let adminPw = [
     { 'serviceName': 'emergency', 'password': sha256('emergency') },
     { 'serviceName': 'card', 'password': sha256('card') },
     { 'serviceName': 'isEntered', 'password': sha256('isEntered') },
+    { 'serviceName': 'entryFee', 'password': sha256('entryFee') },
 ];
 function initDB(filePath){
     // Student.
@@ -221,7 +226,8 @@ function initDB(filePath){
             visiting: element.visiting === undefined ? false : element.visiting == 'true',
             emergency: element.emergency === undefined ? false : element.emergency == 'true',
             card: element.card === undefined ? false : element.card == 'true',
-            isEntered: element.isEntered === undefined ? false : element.isEntered == 'true'
+            isEntered: element.isEntered === undefined ? false : element.isEntered == 'true',
+            entryFee: element.entryFee === undefined ? false : element.entryFee == 'true'
         }));
         students.forEach(x => {
             x.save(function(err){

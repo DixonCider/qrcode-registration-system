@@ -81,24 +81,17 @@ body
                             $('#status').text('Status: Fail');
                         }
                         // Alert if pass all stuff.
-                        let allPass = true;
-                        if (data.isChinese && (!data.plane || !data.receipt)){
-                            allPass = false;
-                        }
-                        if (data.isVisiting && !data.visiting){
-                            allPass = false;
-                        }
-                        if (!data.insurance){
-                            allPass = false;
-                        }
-                        if (!data.health){
-                            allPass = false;
-                        }
-                        if (!data.emergency){
-                            allPass = false;
-                        }
-                        if (allPass && '#{serviceName}' == 'card'){
-                            alert('All pass');
+                        if ('#{serviceName}' == 'card'){
+                            $.ajax({
+                                url : '/isAllPass',
+                                type: 'POST',
+                                data: { 'id': id },
+                                success: function(err, response){
+                                    if (response){
+                                        alert('All pass');
+                                    }
+                                }
+                            });
                         }
                     }
                     else{
