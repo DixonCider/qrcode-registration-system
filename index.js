@@ -65,25 +65,25 @@ app.get('/registration', function(req, res){
             if (passTimeZoneTest || response.isEntered){
                 let studentData = [];
                 if(!response.plane && response.isChinese){
-                    studentData.push('[F] Plane');
+                    studentData.push('[F] Flight Ticket');
                 }
                 if(!response.entryFee && response.isChinese){
-                    studentData.push('[T] Taiwan Entry Permit Fee');
+                    studentData.push('[F] Entry Permit');
                 }
                 if(!response.receipt){
-                    studentData.push('[I] Receipt');
+                    studentData.push('[I] Payment Receipt');
                 }
                 if(!response.emergency){
-                    studentData.push('[E] Emergency Contact');
+                    studentData.push('[E] Emergency Contact in Taiwan');
                 }
                 if(!response.health){
-                    studentData.push('[H] Health Exam Sheet');
+                    studentData.push('[H] NTU Health Exam Form and Form C');
                 }
                 if(!response.insurance){
-                    studentData.push('[I] Proof of Insurance');
+                    studentData.push('[I] Insurance Proof');
                 }
                 if(!response.visiting && response.isVisiting){
-                    studentData.push('[V] Visiting');
+                    studentData.push('[V] Visiting Student');
                 }
                 response.displayData = studentData;
                 res.render('registration', { 'data': response });
@@ -166,6 +166,31 @@ app.get('/test', function(req, res){
     // let filePath = './db_input.csv';
     // initDB(filePath);
     res.send('Test database initialized.');
+});
+
+app.post('/isAllPass', function(req, res){
+    let AllPass = true;
+    Student.findOne({id: req.query.id}, function(err, response){
+        if (response.isChinese && (!response.plane || !response.entryFee)){
+            allPass = false;
+        }
+        if (response.isVisiting && !response.visiting){
+            allPass = false;
+        }
+        if (!response.insurance){
+            allPass = false;
+        }
+        if (!response.health){
+            allPass = false;
+        }
+        if (!response.receipt){
+            allPass = false;
+        }
+        if (!response.emergency){
+            allPass = false;
+        }
+        res.send(isAllPass);
+    });
 });
 
 // Database stuff.
