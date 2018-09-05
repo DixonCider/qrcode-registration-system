@@ -281,6 +281,8 @@ function initDB(filePath){
 
 // Timezone stuff.
 function checkTimeZone(index) {
+    // Have to remove!!
+    return 'ontime';
     let now = new Date();
     let sessionStartTime = new Date();
     // Move now to GMT+8.
