@@ -39,8 +39,7 @@ body
             var studentData = null;
             let scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                mirror: false, 
-                scanPeriod: 5
+                mirror: false
             });
             scanner.addListener('scan', function (content) {
                 // Async query stuff.
