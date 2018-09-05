@@ -15,7 +15,7 @@ body
         div(class = 'row')
             div(class = 'col-xs-12')
                 div(class = 'embed-responsive embed-responsive-4by3')
-                    video(id='preview' playsinline muted loop control)
+                    video(id='preview' playsinline muted autoplay='autoplay' class='active')
         h3 Student ID
         div(class="input-group mb-3")
             input(id='id' type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default")
@@ -37,7 +37,8 @@ body
             var studentData = null;
             let scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                mirror: false
+                mirror: false, 
+                scanPeriod: 5
             });
             scanner.addListener('scan', function (content) {
                 // Async query stuff.
