@@ -39,10 +39,11 @@ app.get('/', function(req, res){
 
 app.post('/studentInfo', function(req, res){
     // Query data base.
+    console.log(req.body);
     Student.findOne({id: req.body.id},
         function(err, response){
             console.log(response);
-            res.send(response);
+            res.send('yes');
     });
 });
 
@@ -281,8 +282,6 @@ function initDB(filePath){
 
 // Timezone stuff.
 function checkTimeZone(index) {
-    // Have to remove!!
-    return 'ontime';
     let now = new Date();
     let sessionStartTime = new Date();
     // Move now to GMT+8.
