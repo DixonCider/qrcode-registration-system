@@ -43,7 +43,7 @@ app.post('/studentInfo', function(req, res){
     Student.findOne({id: req.body.id},
         function(err, response){
             console.log(response);
-            res.send('yes');
+            res.send(response);
     });
 });
 
