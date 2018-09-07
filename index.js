@@ -86,6 +86,18 @@ app.get('/registration', function(req, res){
                 if(!response.visiting && response.isVisiting){
                     studentData.push('[V] Visiting Student');
                 }
+                // Shuffle to avoid everyone in same counter.
+                var currentIndex = studentData.length, temporaryValue, randomIndex;
+                // While there remain elements to shuffle...
+                while (0 !== currentIndex) {
+                    // Pick a remaining element...
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+                    // And swap it with the current element.
+                    temporaryValue = studentData[currentIndex];
+                    studentData[currentIndex] = studentData[randomIndex];
+                    studentData[randomIndex] = temporaryValue;
+                }
                 response.displayData = studentData;
                 res.render('registration', { 'data': response });
             }
@@ -161,12 +173,6 @@ app.get('/initDB', function(req, res){
     let filePath = './db_input.csv';
     initDB(filePath);
     res.send('Database initialized.');
-});
-
-app.get('/test', function(req, res){
-    // let filePath = './db_input.csv';
-    // initDB(filePath);
-    res.send('Test database initialized.');
 });
 
 app.post('/isAllPass', function(req, res){
@@ -301,6 +307,9 @@ function checkTimeZone(index) {
     }
     sessionStartTime = addMinutes(sessionStartTime, minutes);
     sessionEndTime = addMinutes(sessionStartTime, 30);
+    // Minutes off set.
+    let timeOffsetMinute = -5
+    sessionStartTime = addMinutes(sessionStartTime, timeOffsetMinute);
     if (sessionStartTime > now){
         return 'early';
     }
