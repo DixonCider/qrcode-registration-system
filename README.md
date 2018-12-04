@@ -1,4 +1,4 @@
-# OIA Registration System 2018
+# QRcode Registration System
 ## Workflow
 
 ### Student
@@ -32,7 +32,7 @@ curl --data "id=A0000000" http://localhost:8080/studentInfo
 {
     "_id":"5b908251a207860004c3e75a",
     "englishName":"Bobby",
-    "chineseName":"白靖遠",
+    "chineseName":"王小明",
     "timeSection":1,
     "id":"A00000000",
     "isChinese":true,

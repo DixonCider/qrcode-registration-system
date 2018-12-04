@@ -1,3 +1,11 @@
+// Config parameters.
+const dbLocalUrl = ''// Fill in the local db url here. 
+const dbWebUrl = '' // Fill in the web db url here.
+const serverKey = './sslcert/server.key' // Put ssl certification key path here. (.key)
+const serverCrt = './sslcert/server.crt' // Put ssl certification path here. (.crt)
+const studentInfoFilePath = './student_info_db_input.csv' // Put db file for student here.
+const adminInfoFilePath = './admin_info_db_input.csv' // Put db file for student here.
+
 var express = require('express');
 var https = require('https');
 var http = require('http');
@@ -9,14 +17,12 @@ var mongoose = require('mongoose');
 var sha256 = require('js-sha256').sha256;
 var $ = require('jquery');
 $.csv = require('./jquery.csv.js');
-const dbWebUrl = 'mongodb://heroku_4tb37jv8:755bbs9nud5v68trfli5n8n04m@ds225902.mlab.com:25902/heroku_4tb37jv8'
-const dbLocalUrl = 'mongodb://localhost/oia_db'
 mongoose.connect(dbWebUrl);
 var upload = multer();
 var compression = require('compression');
 var helmet = require('helmet');
-var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var privateKey  = fs.readFileSync(serverKey, 'utf8');
+var certificate = fs.readFileSync(serverCrt, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 var app = express();
 
@@ -170,8 +176,7 @@ app.post('/adminSetProperty', function(req, res){
 });
 
 app.get('/initDB', function(req, res){
-    let filePath = './db_input.csv';
-    initDB(filePath);
+    initDB(studentInfoFilePath, adminInfoFilePath);
     res.send('Database initialized.');
 });
 
@@ -231,21 +236,11 @@ var adminSchema = mongoose.Schema({
     password: String
 });
 var Admin = mongoose.model("Admin", adminSchema);
-let adminPw = [
-    { 'serviceName': 'receipt', 'password': sha256('receipt') },
-    { 'serviceName': 'health', 'password': sha256('health') },
-    { 'serviceName': 'insurance', 'password': sha256('insurance') },
-    { 'serviceName': 'plane', 'password': sha256('plane') },
-    { 'serviceName': 'visiting', 'password': sha256('visiting') },
-    { 'serviceName': 'emergency', 'password': sha256('emergency') },
-    { 'serviceName': 'card', 'password': sha256('card') },
-    { 'serviceName': 'isEntered', 'password': sha256('isEntered') },
-    { 'serviceName': 'entryFee', 'password': sha256('entryFee') },
-];
-function initDB(filePath){
+
+function initDB(studentInfoFilePath, adminInfoFilePath){
     // Student.
     Student.remove({}).exec();
-    fs.readFile(filePath, 'utf-8', function(err, data) {  
+    fs.readFile(studentInfoFilePath, 'utf-8', function(err, data) {  
         if (err) throw err;
         let csv = $.csv.toObjects(data);
         let students = csv.map(element => new Student({
@@ -275,15 +270,20 @@ function initDB(filePath){
     });
     // Admin.
     Admin.remove({}).exec();
-    let admins = adminPw.map(element => new Admin({
-        serviceName: element.serviceName,
-        password: element.password
-    }));
-    admins.forEach(x => {
-        x.save(function(err){
-            if (err) throw err;
-        })
+    fs.readFile(adminInfoFilePath, 'utf-8', function(err, data) {  
+        if (err) throw err;
+        let csv = $.csv.toObjects(data);
+        let admins = csv.map(element => new Admin({
+            serviceName: element.serviceName,
+            password: sha256(element.password)
+        }));
+        admins.forEach(x => {
+            x.save(function(err){
+                if (err) throw err;
+            })
+        });
     });
+    
 }
 
 // Timezone stuff.
@@ -361,10 +361,3 @@ if (process.env.NODE_ENV == 'production') {
             }
     });
 };
-/*
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(8081);
-httpsServer.listen(8444);
-*/
