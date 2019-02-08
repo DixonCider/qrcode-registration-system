@@ -1,4 +1,13 @@
 # QRcode Registration System
+
+## Installation
+1. Install npm packages.
+```
+npm install
+```
+2. Place the certification key in proper location (default `./sslcert/`). Can path change in `index.js`. Must contain two files `.key` and `.crt`. This is for https for secure connection required to allow access for camera. 
+3. Put in the mongoDB url in `index.js`.
+
 ## Workflow
 
 ### Student

@@ -1,28 +1,33 @@
 // Config parameters.
-const dbLocalUrl = ''// Fill in the local db url here. 
-const dbWebUrl = '' // Fill in the web db url here.
-const serverKey = './sslcert/server.key' // Put ssl certification key path here. (.key)
-const serverCrt = './sslcert/server.crt' // Put ssl certification path here. (.crt)
-const studentInfoFilePath = './student_info_db_input.csv' // Put db file for student here.
-const adminInfoFilePath = './admin_info_db_input.csv' // Put db file for student here.
+const config = require('./config.json')
 
-var express = require('express');
-var https = require('https');
-var http = require('http');
-var fs = require('fs');
+var express = require("express")
+var https = require("https")
+var http = require("http")
+var fs = require("fs")
 var bodyParser = require('body-parser');
 var multer = require('multer');
-var cookieParser = require('cookie-parser');;
+var cookieParser = require('cookie-parser');
 var mongoose = require('mongoose');
 var sha256 = require('js-sha256').sha256;
-var $ = require('jquery');
-$.csv = require('./jquery.csv.js');
-mongoose.connect(dbWebUrl);
+
+var $ =require('jquery');
+var csv = require('./jquery.csv.js');
+var studentSchema = require('./storage/studentSchema.js')
+var adminSchema = require('./storage/adminSchema.js')
+var timezone = require('./time.js');
+
+if (process.env.NODE_ENV != 'production') {
+  mongoose.connect(config.development.dbUrl);
+}
+else {
+  mongoose.connect(process.env.MONGODB_URI);
+}
 var upload = multer();
 var compression = require('compression');
 var helmet = require('helmet');
-var privateKey  = fs.readFileSync(serverKey, 'utf8');
-var certificate = fs.readFileSync(serverCrt, 'utf8');
+var privateKey  = fs.readFileSync(config.general.serverKeyPath, 'utf8');
+var certificate = fs.readFileSync(config.general.serverCrtPath, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 var app = express();
 
@@ -57,7 +62,7 @@ app.get('/registration', function(req, res){
     // Render registration page.
     Student.findOne({id: req.query.id}, function(err, response){
         if (response !== null){
-            let passTimeZoneVerdict = checkTimeZone(response.timeSection);
+            let passTimeZoneVerdict = timezone.checkTimeZone(response.timeSection);
             let passTimeZoneTest = passTimeZoneVerdict == 'ontime';
             if (passTimeZoneTest && !response.isEntered){
                 // Update isEntered to TRUE.
@@ -176,7 +181,7 @@ app.post('/adminSetProperty', function(req, res){
 });
 
 app.get('/initDB', function(req, res){
-    initDB(studentInfoFilePath, adminInfoFilePath);
+    initDB(config.general.studentInfoPath, config.general.adminInfoPath);
     res.send('Database initialized.');
 });
 
@@ -212,29 +217,8 @@ app.post('/isAllPass', function(req, res){
 });
 
 // Database stuff.
-var studentSchema = mongoose.Schema({
-    englishName: String,
-    chineseName: String,
-    timeSection: Number,
-    id: String,
-    isChinese: Boolean,
-    isVisiting: Boolean,
-    commentLog: String,
-    entryFee: Boolean,
-    receipt: Boolean,
-    health: Boolean,
-    insurance: Boolean,
-    plane: Boolean,
-    visiting: Boolean,
-    emergency: Boolean,
-    card: Boolean,
-    isEntered: Boolean
-});
+
 var Student = mongoose.model("Student", studentSchema);
-var adminSchema = mongoose.Schema({
-    serviceName: String,
-    password: String
-});
 var Admin = mongoose.model("Admin", adminSchema);
 
 function initDB(studentInfoFilePath, adminInfoFilePath){
@@ -242,8 +226,8 @@ function initDB(studentInfoFilePath, adminInfoFilePath){
     Student.remove({}).exec();
     fs.readFile(studentInfoFilePath, 'utf-8', function(err, data) {  
         if (err) throw err;
-        let csv = $.csv.toObjects(data);
-        let students = csv.map(element => new Student({
+        let csvData = csv.toObjects(data);
+        let students = csvData.map(element => new Student({
             englishName: element.englishName,
             chineseName: element.chineseName,
             timeSection: element.timeSection,
@@ -272,8 +256,8 @@ function initDB(studentInfoFilePath, adminInfoFilePath){
     Admin.remove({}).exec();
     fs.readFile(adminInfoFilePath, 'utf-8', function(err, data) {  
         if (err) throw err;
-        let csv = $.csv.toObjects(data);
-        let admins = csv.map(element => new Admin({
+        let csvData = csv.toObjects(data);
+        let admins = csvData.map(element => new Admin({
             serviceName: element.serviceName,
             password: sha256(element.password)
         }));
@@ -283,46 +267,8 @@ function initDB(studentInfoFilePath, adminInfoFilePath){
             })
         });
     });
-    
 }
 
-// Timezone stuff.
-function checkTimeZone(index) {
-    let now = new Date();
-    let sessionStartTime = new Date();
-    // Move now to GMT+8.
-    const TIMEZONEDIFF = 8;
-    now.setHours(now.getUTCHours() + TIMEZONEDIFF);
-
-    let minutes = 0;
-    if (index <= 4){
-        sessionStartTime.setHours(10);
-        sessionStartTime.setMinutes(0);
-        minutes = 30 * (index - 1);
-    }
-    else {
-        sessionStartTime.setHours(13);
-        sessionStartTime.setMinutes(30);
-        minutes = 30 * (index - 5);
-    }
-    sessionStartTime = addMinutes(sessionStartTime, minutes);
-    sessionEndTime = addMinutes(sessionStartTime, 30);
-    // Minutes off set.
-    let timeOffsetMinute = -5
-    sessionStartTime = addMinutes(sessionStartTime, timeOffsetMinute);
-    if (sessionStartTime > now){
-        return 'early';
-    }
-    else if (sessionEndTime < now){
-        return 'late';
-    }
-    else {
-        return 'ontime';
-    }
-}
-function addMinutes(date, minutes) {
-    return new Date(date.getTime() + minutes*60000);
-}
 
 app.get('*', function(req, res){
 	res.send('Sorry, this is an invalid URL.');

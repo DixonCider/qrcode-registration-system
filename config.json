@@ -1,0 +1,14 @@
+{
+  "general": {
+    "serverKeyPath": "sslcert/server.key",
+    "serverCrtPath": "sslcert/server.crt",
+    "studentInfoPath": "./student_info_db_input.csv",
+    "adminInfoPath": "./admin_info_db_input.csv"
+  },
+  "development": {
+    "dbUrl": "mongodb://localhost:27017/oia_db"
+  },
+  "production": {
+    "dbUrl": ""
+  }
+}
