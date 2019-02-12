@@ -12,10 +12,17 @@ body
         h2 #{data.englishName}  #{data.chineseName}
         h2 #{data.id}
         div(id = 'qrcode')
-        h3 Please go to the following counters to complete the registration:
-        ul 
+        h3 Please proceed to counters:
+        ul(style="list-style-type: none")
             each val in data.displayData
-                li=val
-        h5 After passing all counters, please go to counter [S] and receive your student ID card.
+              li 
+                h4 #{val}
+        h4 After passing all, proceed to counter [S] to receive student ID card.
         script.
             new QRCode(document.getElementById("qrcode"), "#{data.id}");
+            window.addEventListener("load", function(event) {
+              let msg = 'Proceed to the listed counters to complete registration. After passing all, go to counter [S].';
+              alert(msg);
+              alert(msg);
+              alert(msg);
+            });

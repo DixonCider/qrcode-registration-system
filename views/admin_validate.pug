@@ -43,7 +43,7 @@ body
             });
             scanner.addListener('scan', function (content) {
                 // Async query stuff.
-                updateInfo(content);
+                updateInfo(content, true);
                 // console.log(content);
             });
             Instascan.Camera.getCameras().then(function (cameras) {
@@ -66,7 +66,7 @@ body
                 console.error(e);
             });
         });
-        function updateInfo(content){
+        function updateInfo(content, init){
             $.ajax({
                 url : '/studentInfo',
                 type: 'POST',
@@ -92,9 +92,12 @@ body
                                 async: false,
                                 data: { 'id': data.id },
                                 success: function(err, response){
-                                    alert('All pass.');
+                                    alert(response);
                                 }
                             });
+                        }
+                        if (init != undefined && init) {
+                          changeStatus(true);
                         }
                     }
                     else{
@@ -121,7 +124,7 @@ body
     script.
         $('#manualQuery').on('click', function(){
             let id = $('#id').val();
-            updateInfo(id);
+            updateInfo(id, true);
         });
         $('#pass').on("click", function(){
             changeStatus(true);

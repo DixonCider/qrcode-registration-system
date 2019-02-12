@@ -77,25 +77,25 @@ app.get('/registration', function(req, res){
             if (passTimeZoneTest || response.isEntered){
                 let studentData = [];
                 if(!response.plane && response.isChinese){
-                    studentData.push('[F] Flight Ticket');
+                    studentData.push('C. Flight Ticket');
                 }
                 if(!response.entryFee && response.isChinese){
-                    studentData.push('[F] Entry Permit');
+                    studentData.push('C. Entry Permit');
                 }
                 if(!response.receipt){
-                    studentData.push('[I] Payment Receipt');
+                    studentData.push('I. Payment Receipt');
                 }
                 if(!response.emergency){
-                    studentData.push('[E] Emergency Contact in Taiwan');
+                    studentData.push('E. Emergency Contact in Taiwan and International Student Declaration Form');
                 }
                 if(!response.health){
-                    studentData.push('[H] NTU Health Exam Form and Form C');
+                    studentData.push('H. NTU Health Exam Form and Form C');
                 }
                 if(!response.insurance){
-                    studentData.push('[I] Insurance Proof');
+                    studentData.push('I. Insurance Proof');
                 }
                 if(!response.visiting && response.isVisiting){
-                    studentData.push('[V] Visiting Student');
+                    studentData.push('V. Visiting Student');
                 }
                 // Shuffle to avoid everyone in same counter.
                 var currentIndex = studentData.length, temporaryValue, randomIndex;
