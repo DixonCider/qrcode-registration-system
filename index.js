@@ -189,30 +189,43 @@ app.post('/isAllPass', function(req, res){
     Student.findOne({id: req.body.id}, function(err, response){
         console.log(response);
         let allPass = true;
+        let notPassed = []
         if (response.isChinese && (!response.plane || !response.entryFee)){
             allPass = false;
+            notPassed.push('plane or entryfee');
         }
         if (response.isVisiting && !response.visiting){
             allPass = false;
+            notPassed.push('visiting');
         }
         if (!response.insurance){
             allPass = false;
+            notPassed.push('insurance');
         }
         if (!response.health){
             allPass = false;
+            notPassed.push('health');
         }
         if (!response.receipt){
             allPass = false;
+            notPassed.push('receipt');
         }
         if (!response.emergency){
             allPass = false;
+            notPassed.push('emergency');
         }
+        res.send({
+          'verdict': allPass,
+          'notPassedList': notPassed
+        });
+        /*
         if (allPass){
             res.send();
         }
         else {
             res.status(404).send({success: false, error: {message: 'No blah Found'}});
         }
+        */
     });
 });
 
@@ -223,11 +236,12 @@ var Admin = mongoose.model("Admin", adminSchema);
 
 function initDB(studentInfoFilePath, adminInfoFilePath){
     // Student.
-    Student.remove({}).exec();
-    fs.readFile(studentInfoFilePath, 'utf-8', function(err, data) {  
-        if (err) throw err;
-        let csvData = csv.toObjects(data);
-        let students = csvData.map(element => new Student({
+    Student.remove({}).exec()
+      .then(() => {
+        fs.readFile(studentInfoFilePath, 'utf-8', function(err, data) {  
+          if (err) throw err;
+          let csvData = csv.toObjects(data);
+          let students = csvData.map(element => new Student({
             englishName: element.englishName,
             chineseName: element.chineseName,
             timeSection: element.timeSection,
@@ -245,28 +259,33 @@ function initDB(studentInfoFilePath, adminInfoFilePath){
             card: element.card === undefined || element.card === null ? false : element.card == 'true',
             isEntered: element.isEntered === undefined || element.isEntered === null ? false : element.isEntered == 'true',
             entryFee: element.entryFee === undefined || element.entryFee === null ? false : element.entryFee == 'true'
-        }));
-        students.forEach(x => {
+          }));
+          students.forEach(x => {
             x.save(function(err){
-                if(err) throw err;
+              if(err) throw err;
             });
+          });
         });
-    });
+      })
     // Admin.
-    Admin.remove({}).exec();
-    fs.readFile(adminInfoFilePath, 'utf-8', function(err, data) {  
-        if (err) throw err;
-        let csvData = csv.toObjects(data);
-        let admins = csvData.map(element => new Admin({
+    Admin.remove({}).exec()
+      .then(() => {
+        fs.readFile(adminInfoFilePath, 'utf-8', function(err, data) {  
+          if (err) throw err;
+          let csvData = csv.toObjects(data);
+          console.log(csvData)
+          let admins = csvData.map(element => new Admin({
             serviceName: element.serviceName,
             password: sha256(element.password)
-        }));
-        admins.forEach(x => {
+          }));
+          console.log(admins)
+          admins.forEach(x => {
             x.save(function(err){
-                if (err) throw err;
+              if (err) throw err;
             })
+          });
         });
-    });
+      })
 }
 
 

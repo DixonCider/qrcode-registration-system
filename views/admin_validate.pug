@@ -91,12 +91,18 @@ body
                                 type: 'POST',
                                 async: false,
                                 data: { 'id': data.id },
-                                success: function(err, response){
-                                    alert(response);
+                                success: function(response, status){
+                                  let responseMsg = `Pass: ${response.verdict}\n`;
+                                  if (response.notPassedList.length > 0)
+                                    responseMsg += `Incomplete items:\n`
+                                  for (let notPassed of response.notPassedList) {
+                                    responseMsg += `- ${notPassed}\n`;
+                                    }
+                                    alert(responseMsg);
                                 }
                             });
                         }
-                        if (init != undefined && init) {
+                        if (init != undefined && init && '#{serviceName}' != 'card' && '#{serviceName}' != 'isEntered') {
                           changeStatus(true);
                         }
                     }
@@ -149,9 +155,9 @@ body
                     'verdict': pass,
                     'comment': comment
                 },
-                success: function(err, response){
+                success: function(response, status){
                     updateInfo(id);
-                    alert('Success');
+                    alert('Update ' + status);
                     $('#comment').val('');
                 }
             });

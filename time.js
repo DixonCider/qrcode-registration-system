@@ -1,3 +1,5 @@
+const config = require('./config.json').timezone
+
 function checkTimeZone(index) {
   // testing purpose.
   if (index < 0) {
@@ -10,15 +12,15 @@ function checkTimeZone(index) {
   now.setHours(now.getUTCHours() + TIMEZONEDIFF);
 
   let minutes = 0;
-  if (index <= 4){
-    sessionStartTime.setHours(10);
-    sessionStartTime.setMinutes(0);
+  if (index <= config.lastMorningSessionIndex){
+    sessionStartTime.setHours(config.startTime.morning.hour);
+    sessionStartTime.setMinutes(config.startTime.morning.min);
     minutes = 30 * (index - 1);
   }
   else {
-    sessionStartTime.setHours(13);
-    sessionStartTime.setMinutes(30);
-    minutes = 30 * (index - 5);
+    sessionStartTime.setHours(config.startTime.afternoon.hour);
+    sessionStartTime.setMinutes(config.startTime.afternoon.min);
+    minutes = 30 * (index - 1 - config.lastMorningSessionIndex);
   }
   sessionStartTime = addMinutes(sessionStartTime, minutes);
   sessionEndTime = addMinutes(sessionStartTime, 30);

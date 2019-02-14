@@ -10,5 +10,18 @@
   },
   "production": {
     "dbUrl": ""
+  },
+  "timezone": {
+    "lastMorningSessionIndex": 4,
+    "startTime": {
+      "morning": {
+        "hour": 10,
+        "min": 0
+      },
+      "afternoon": {
+        "hour": 13,
+        "min": 30
+      }
+    }
   }
 }
