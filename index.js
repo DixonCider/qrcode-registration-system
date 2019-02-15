@@ -82,7 +82,7 @@ app.get('/registration', function(req, res){
                 if(!response.entryFee && response.isChinese){
                     studentData.push('C. Entry Permit');
                 }
-                if(!response.receipt){
+                if(!response.receipt && !response.isVisiting){
                     studentData.push('I. Payment Receipt');
                 }
                 if(!response.emergency){
@@ -91,7 +91,7 @@ app.get('/registration', function(req, res){
                 if(!response.health){
                     studentData.push('H. NTU Health Exam Form and Form C');
                 }
-                if(!response.insurance){
+                if(!response.insurance && !response.isVisiting){
                     studentData.push('I. Insurance Proof');
                 }
                 if(!response.visiting && response.isVisiting){
@@ -198,7 +198,7 @@ app.post('/isAllPass', function(req, res){
             allPass = false;
             notPassed.push('visiting');
         }
-        if (!response.insurance){
+        if (!response.insurance && !response.isVisiting){
             allPass = false;
             notPassed.push('insurance');
         }
@@ -206,7 +206,7 @@ app.post('/isAllPass', function(req, res){
             allPass = false;
             notPassed.push('health');
         }
-        if (!response.receipt){
+        if (!response.receipt && !response.isVisiting){
             allPass = false;
             notPassed.push('receipt');
         }
